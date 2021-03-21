@@ -8,7 +8,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from configs.configs import ApplicationConfigs
-from transport.base import SanicEndpoint
+from db.models.base import BaseModel
 
 base_dir = dirname(dirname(dirname(abspath(__file__))))
 sys.path.append(base_dir)
@@ -25,7 +25,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = SanicEndpoint
+target_metadata = BaseModel.metadata
 
 
 # other values from the config, defined by the needs of env.py,

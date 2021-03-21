@@ -4,9 +4,9 @@ from .base import BaseModel
 
 
 class DBCourier(BaseModel):
-    __tablename__ = 'employees'
+    __tablename__ = 'couriers'
 
-    courier_id = Column(Integer, unique=True, nullable=False)
+    courier_id = Column(Integer, unique=True, nullable=False, primary_key=True)
     courier_type = Column(VARCHAR(4), nullable=False)
-    regions =  Column(ARRAY(Integer), nullable=False)
-    working_hourse = Column(ARRAY(VARCHAR(11)), nullable=False)
+    regions = Column(ARRAY(Integer), nullable=False)
+    working_hours = Column(ARRAY(VARCHAR(11)), nullable=False)
