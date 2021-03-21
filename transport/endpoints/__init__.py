@@ -1,2 +1,2 @@
 from .health import HealthEndpoint
-from .couriers import ImportCouriers
+from .couriers import CreateCouriers

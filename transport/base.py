@@ -1,13 +1,15 @@
 from typing import Iterable
+from contextvars import ContextVar
 from sanic.request import Request
 from sanic.response import BaseHTTPResponse, json
 from http import HTTPStatus
 
 class SanicEndpoint:
 
-    def __init__(self, uri: str, methods: Iterable, *args, **kwargs):
+    def __init__(self, uri: str, methods: Iterable, context: ContextVar, *args, **kwargs):
         self.uri = uri
         self.methods = methods
+        self.database_context = context
         self.__name__ = self.__class__.__name__
 
     async def __call__(self, request: Request, *args, **kwargs):
@@ -17,7 +19,7 @@ class SanicEndpoint:
 
         body = {}
         body.update(await self.import_body_json(request))
-        body.update(await self.import_body_headers(request))
+        body.update(await self.import_headers_json(request))
 
         return await self._method(request, body, *args, **kwargs)
 
