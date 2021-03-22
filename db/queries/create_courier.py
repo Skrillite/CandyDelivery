@@ -12,14 +12,16 @@ def create_courier(session: DBSession, courier: Courier) -> DBCourier:
         working_hours=courier.working_hours
     )
 
-    if session.get_courier_by_id(courier.courier_id):
-        raise DBCourierExistsException(courier.courier_id)
+    # if session.get_courier_by_id(courier.courier_id):
+    #     raise DBCourierExistsException(courier.courier_id)
 
     session.add_model(new_courier)
 
     return new_courier
 
 
-def create_couriers(session: DBSession, couriers: list[Courier]):
+def overwrite_couriers(session: DBSession, couriers: list[Courier]):
+    session.drop_base(DBCourier)
+
     for cr in couriers:
         create_courier(session, cr)

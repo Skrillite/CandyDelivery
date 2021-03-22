@@ -1,25 +1,19 @@
-from datetime import time
-import json
-
 from pydantic import BaseModel, ValidationError, validator
 
-from api.exceptions import ApiValidationException
+from api.exceptions import RequestValidationException
+from .helpers import time_range_check
 
 
 class Courier(BaseModel):
     courier_id: int
     courier_type: str
-    regions: list[str]
+    regions: list[int]
     working_hours: list[str]
 
     @validator('working_hours')
-    def time_range_check(cls, working_hours):
+    def time_range_validation(cls, working_hours):
         for _time_range in working_hours:
-            for _time in _time_range.split('-'):
-                try:
-                    time.fromisoformat(_time)
-                except ValueError as e:
-                    raise ValueError(f'{_time_range} is invalid time range format')
+            time_range_check(_time_range)
         return working_hours
 
     @validator('courier_type')
@@ -41,13 +35,11 @@ def courier_list_validation(input_dict: dict) -> list[Courier]:
             try:
                 valid_list.append(Courier.parse_obj(courier_obj))
             except ValidationError as e:
-                invalid_list.append({'id:': courier_obj['courier_id']})
+                invalid_list.append({'id': courier_obj['courier_id']})
     except KeyError as e:
-        raise ApiValidationException(message='invalid json structure')
-    # except json.JSONDecodeError as e:
-    #     raise ApiValidationException(message='json decode error')
+        raise RequestValidationException(body={'validation_error': f"missing {e.__str__()} field"})
 
     if invalid_list:
-        raise ApiValidationException(message=json.dumps({'couriers': invalid_list}))
+        raise RequestValidationException(body={'validation_error': {'couriers': invalid_list}})
 
     return valid_list

@@ -11,5 +11,8 @@ def get_routes(database_context: ContextVar) -> Tuple:
         ),
         endpoints.CreateCouriers(
             uri='couriers', methods=['POST'], context=database_context,
+        ),
+        endpoints.CreateOrders(
+            uri='/orders', methods=['POST'], context=database_context,
         )
     )

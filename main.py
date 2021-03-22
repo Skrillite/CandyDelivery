@@ -13,7 +13,7 @@ def main():
         host=ApplicationConfigs.sanic.host,
         port=ApplicationConfigs.sanic.port,
         workers=ApplicationConfigs.sanic.workers,
-        debug=ApplicationConfigs.sanic.debug
+        debug=ApplicationConfigs.sanic.debug,
     )
 
 

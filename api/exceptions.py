@@ -1,10 +1,11 @@
-from sanic.exceptions import SanicException
+from base_exception import ApplicationException
 
 
-class ApiValidationException(SanicException):
-    def __init__(self, status_code=400, message=None):
-        super(ApiValidationException, self).__init__(status_code=status_code, message=message)
+class RequestValidationException(ApplicationException):
+    def __init__(self, body: dict):
+        super(RequestValidationException, self).__init__(status_code=400, body=body)
 
 
-class ApiResponseValidationException(SanicException):
-    status_code = 500
+class ResponseValidationException(ApplicationException):
+    def __init__(self, message: str):
+        super(ResponseValidationException, self).__init__(status_code=500, message=message)

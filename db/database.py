@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError, DataError
 from sqlalchemy.orm import sessionmaker, Session, Query
 
 from db.models import BaseModel, DBOrder, DBCourier
+from db.exception import *
 
 
 class DBSession:
@@ -14,6 +15,9 @@ class DBSession:
     def query(self, *args, **kwargs) -> Query:
         return self._session.query(*args, **kwargs)
 
+    def drop_base(self, model: BaseModel) -> Query:
+        return self._session.query(model).delete()
+
     def close_session(self):
         self._session.close()
 
@@ -21,17 +25,17 @@ class DBSession:
         try:
             self._session.add(model)
         except IntegrityError as e:
-            pass
+            raise DBIntegrityException
         except DataError as e:
-            pass
+            raise DBDataException
 
     def commit_session(self, need_close: bool = False):
-        # try:
-        self._session.commit()
-        # except IntegrityError as e:
-        #     pass
-        # except DataError as e:
-        #     pass
+        try:
+            self._session.commit()
+        except IntegrityError as e:
+            raise DBIntegrityException
+        except DataError as e:
+            raise DBDataException
 
         if need_close:
             self.close_session()
