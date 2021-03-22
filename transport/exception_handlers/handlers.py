@@ -1,19 +1,21 @@
 from sanic.request import Request
-from sanic.response import json
+from sanic.response import json, raw
 
-from api.exceptions import RequestValidationException, ResponseValidationException
-from db.exception import DBDataException, DBIntegrityException, DBCourierExistsException
+from api.exceptions import *
+from db.exception import *
+from base_exception import ApplicationException
 
 
 def get_exc_handlers():
     return (
         RequestValidationHandler,
-        ResponseValidationHandler
+        ResponseValidationHandler,
+        EmptyRequestValidationExceptionHandler,
     )
 
 
 class BasicValidationHandler:
-    exception: Exception
+    exception: ApplicationException
 
     @staticmethod
     def handler(request: Request, exception: Exception):
@@ -26,3 +28,11 @@ class RequestValidationHandler(BasicValidationHandler):
 
 class ResponseValidationHandler(BasicValidationHandler):
     exception = ResponseValidationException
+
+
+class EmptyRequestValidationExceptionHandler(BasicValidationHandler):
+    exception = EmptyValidationException
+
+    @staticmethod
+    def handler(request: Request, exception: Exception):
+        return raw('', status=400)

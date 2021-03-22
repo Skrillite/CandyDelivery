@@ -21,7 +21,6 @@ def configure_app(database_context: ContextVar) -> Sanic:
             handler=handler,
             uri=handler.uri,
             methods=handler.methods,
-            strict_slashes=True
         )
 
     return app

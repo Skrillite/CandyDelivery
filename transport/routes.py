@@ -10,9 +10,12 @@ def get_routes(database_context: ContextVar) -> Tuple:
             uri='/', methods=['GET'], context=database_context,
         ),
         endpoints.CreateCouriers(
-            uri='couriers', methods=['POST'], context=database_context,
+            uri='/couriers', methods=['POST'], context=database_context,
         ),
         endpoints.CreateOrders(
             uri='/orders', methods=['POST'], context=database_context,
+        ),
+        endpoints.PatchCourier(
+            uri='/couriers/<id>', methods=['PATCH'], context=database_context,
         )
     )

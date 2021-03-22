@@ -6,6 +6,6 @@ class ApplicationException(Exception):
         self.status_code = status_code
 
         if body is None:
-            self.body = {'message': message or HTTPStatus(status_code).phrase()}
+            self.body = {'message': message or HTTPStatus(status_code).phrase}
         else:
             self.body = body

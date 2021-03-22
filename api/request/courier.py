@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ValidationError, validator
 
-from api.exceptions import RequestValidationException
+from api.exceptions import *
 from .helpers import time_range_check
 
 
@@ -43,3 +43,23 @@ def courier_list_validation(input_dict: dict) -> list[Courier]:
         raise RequestValidationException(body={'validation_error': {'couriers': invalid_list}})
 
     return valid_list
+
+
+class DefCourier(Courier):
+    def __new__(cls, *args, **kwargs):
+        if 'courier_id' in cls.__fields__:
+            del cls.__fields__['courier_id']
+        return super(DefCourier, cls).__new__(cls)
+
+    courier_type: str = None
+    regions: list[int] = None
+    working_hours: list[str] = None
+
+
+def patch_courier_validation(input_dict: dict) -> DefCourier:
+    try:
+        obj = DefCourier.parse_obj(input_dict)
+    except ValidationError as e:
+        raise EmptyValidationException
+
+    return obj

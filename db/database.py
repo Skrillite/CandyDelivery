@@ -40,8 +40,8 @@ class DBSession:
         if need_close:
             self.close_session()
 
-    def get_courier_by_id(self, courier_id: int):
-        self.query(DBCourier).filter(DBCourier.courier_id == courier_id).first()
+    def get_courier_by_id(self, courier_id: int) -> DBCourier:
+        return self.query(DBCourier).filter(DBCourier.courier_id == courier_id).first()
 
 
 class DataBase:

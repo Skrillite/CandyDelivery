@@ -6,6 +6,10 @@ class RequestValidationException(ApplicationException):
         super(RequestValidationException, self).__init__(status_code=400, body=body)
 
 
+class EmptyValidationException(ApplicationException):
+    pass
+
+
 class ResponseValidationException(ApplicationException):
     def __init__(self, message: str):
         super(ResponseValidationException, self).__init__(status_code=500, message=message)
