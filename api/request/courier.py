@@ -2,7 +2,7 @@ from pydantic import BaseModel, ValidationError, validator
 
 from api.exceptions import *
 from .helpers import time_range_check
-from db.helpers import PSTimeRange
+from db.helpers import TimeRange
 
 
 class Courier(BaseModel):
@@ -18,7 +18,7 @@ class Courier(BaseModel):
 
         for idx, i in enumerate(working_hours):
             _time = i.split('-')
-            working_hours[idx] = PSTimeRange(_time[0], _time[1], '[]')
+            working_hours[idx] = TimeRange(_time[0], _time[1], '[]')
 
         return working_hours
 

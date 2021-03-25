@@ -5,9 +5,6 @@ from configs.configs import ApplicationConfigs
 from db.database import DataBase
 from db.helpers import timerange_type_reg
 
-from sqlalchemy.dialects import postgresql
-from db.helpers import TIMERANGE
-
 
 def init_db_posgresql(database_context: ContextVar):
     engine = create_engine(
@@ -15,7 +12,7 @@ def init_db_posgresql(database_context: ContextVar):
         pool_pre_ping=True,
     )
 
-    postgresql.base.ischema_names['timerange'] = TIMERANGE
+    timerange_type_reg()
 
     database = DataBase(connection=engine)
     assert database.check_connection()

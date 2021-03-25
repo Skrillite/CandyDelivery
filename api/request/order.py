@@ -2,6 +2,7 @@ from pydantic import BaseModel, ValidationError, validator
 
 from api.exceptions import RequestValidationException
 from .helpers import time_range_check
+from db.helpers import TimeRange
 
 
 class Order(BaseModel):
@@ -12,8 +13,10 @@ class Order(BaseModel):
 
     @validator('delivery_hours')
     def time_range_check(cls, delivery_hours):
-        for _range in delivery_hours:
+        for idx, _range in enumerate(delivery_hours):
             time_range_check(_range)
+            _time = _range.split('-')
+            delivery_hours[idx] = TimeRange(_time[0], _time[1], '[]')
         return delivery_hours
 
     class Config:
