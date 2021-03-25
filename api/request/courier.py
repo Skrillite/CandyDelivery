@@ -2,6 +2,7 @@ from pydantic import BaseModel, ValidationError, validator
 
 from api.exceptions import *
 from .helpers import time_range_check
+from db.helpers import PSTimeRange
 
 
 class Courier(BaseModel):
@@ -14,6 +15,11 @@ class Courier(BaseModel):
     def time_range_validation(cls, working_hours):
         for _time_range in working_hours:
             time_range_check(_time_range)
+
+        for idx, i in enumerate(working_hours):
+            _time = i.split('-')
+            working_hours[idx] = PSTimeRange(_time[0], _time[1], '[]')
+
         return working_hours
 
     @validator('courier_type')
@@ -59,6 +65,22 @@ class DefCourier(Courier):
 def patch_courier_validation(input_dict: dict) -> DefCourier:
     try:
         obj = DefCourier.parse_obj(input_dict)
+    except ValidationError as e:
+        raise EmptyValidationException
+
+    return obj
+
+
+class CourierID(BaseModel):
+    courier_id: int
+
+    class Config:
+        extra = 'forbid'
+
+
+def courier_id_validation(input_dict: dict) -> CourierID:
+    try:
+        obj = CourierID.parse_obj(input_dict)
     except ValidationError as e:
         raise EmptyValidationException
 

@@ -9,6 +9,9 @@ from alembic import context
 
 from configs.configs import ApplicationConfigs
 from db.models.base import BaseModel
+from db.helpers import timerange_type_reg
+
+timerange_type_reg()
 
 base_dir = dirname(dirname(dirname(abspath(__file__))))
 sys.path.append(base_dir)

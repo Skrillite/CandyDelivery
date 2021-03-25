@@ -1,3 +1,4 @@
+from base_exception import ApplicationException
 from sanic.exceptions import SanicException
 
 
@@ -17,6 +18,8 @@ class DBDataException(SanicException):
         )
 
 
-class DBCourierExistsException(SanicException):
-    def __init__(self, courier_id):
-        super(DBCourierExistsException, self).__init__(status_code=400, message=f'{courier_id} is exists')
+class DBCourierExistsException(ApplicationException):
+    def __init__(self):
+        super(DBCourierExistsException, self).__init__(
+            status_code=400
+        )

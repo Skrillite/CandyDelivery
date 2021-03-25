@@ -11,6 +11,7 @@ def get_exc_handlers():
         RequestValidationHandler,
         ResponseValidationHandler,
         EmptyRequestValidationExceptionHandler,
+        DBCourierExistExceptionHandler
     )
 
 
@@ -18,8 +19,11 @@ class BasicValidationHandler:
     exception: ApplicationException
 
     @staticmethod
-    def handler(request: Request, exception: Exception):
-        return json(exception.body, exception.status_code)
+    def handler(request: Request, exception: ApplicationException):
+        if exception.body is not None:
+            return json(exception.body, exception.status_code)
+        else:
+            return raw('', exception.status_code)
 
 
 class RequestValidationHandler(BasicValidationHandler):
@@ -33,6 +37,6 @@ class ResponseValidationHandler(BasicValidationHandler):
 class EmptyRequestValidationExceptionHandler(BasicValidationHandler):
     exception = EmptyValidationException
 
-    @staticmethod
-    def handler(request: Request, exception: Exception):
-        return raw('', status=400)
+
+class DBCourierExistExceptionHandler(BasicValidationHandler):
+    exception = DBCourierExistsException
