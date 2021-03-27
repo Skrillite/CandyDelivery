@@ -4,6 +4,12 @@ from api.exceptions import *
 from .helpers import time_range_check
 from db.helpers import TimeRange
 
+courier_lifting_capacity = {
+    'foot': 10,
+    'bike': 15,
+    'car': 50
+}
+
 
 class Courier(BaseModel):
     courier_id: int
@@ -26,7 +32,7 @@ class Courier(BaseModel):
     def courier_types_check(cls, courier_type):
         if courier_type not in ['foot', 'bike', 'car']:
             raise ValueError(f'{courier_type} is not allowed type')
-        return courier_type
+        return courier_lifting_capacity[courier_type]
 
     class Config:
         extra = 'forbid'

@@ -17,5 +17,11 @@ def get_routes(database_context: ContextVar) -> Tuple:
         ),
         endpoints.PatchCourier(
             uri='/couriers/<id>', methods=['PATCH'], context=database_context,
+        ),
+        endpoints.AssignOrders(
+            uri='/orders/assign', methods=['POST'], context=database_context,
+        ),
+        endpoints.CompleteOrder(
+            uri='/orders/complete', methods=['POST'], context=database_context,
         )
     )

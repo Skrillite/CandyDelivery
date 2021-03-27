@@ -1,13 +1,13 @@
 from api.request.courier import Courier
 from db.database import DBSession
 from db.models import DBCourier
-from db.exception import DBCourierExistsException
+from db.exception import DBDoesntExistsException
 
 
 def create_courier(session: DBSession, courier: Courier) -> DBCourier:
     new_courier = DBCourier(
         courier_id=courier.courier_id,
-        courier_type=courier.courier_type,
+        lifting_capacity=courier.courier_type,
         regions=courier.regions,
         working_hours=courier.working_hours
     )

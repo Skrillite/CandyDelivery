@@ -11,8 +11,9 @@ class TimeRange(psycopg2.extras.Range):
     pass
 
 
-class TIMERANGE(postgresql.ranges.RangeOperators, types.TypeEngine):
-    __visit_name__ = 'TIMERANGE'
+class TIMERANGE(postgresql.ranges.RangeOperators, types.UserDefinedType):
+    def get_col_spec(self, **kwargs):
+        return 'timerange'
 
 
 def timerange_type_reg():

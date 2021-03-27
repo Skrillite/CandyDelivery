@@ -39,7 +39,7 @@ class SanicEndpoint:
             status: int = 200) -> BaseHTTPResponse:
         if body is None:
             body = {
-                'message': message or HTTPStatus(status).phrase(),
+                'message': message or HTTPStatus(status).phrase,
             }
 
         return json(body, status)

@@ -39,4 +39,4 @@ class EmptyRequestValidationExceptionHandler(BasicValidationHandler):
 
 
 class DBCourierExistExceptionHandler(BasicValidationHandler):
-    exception = DBCourierExistsException
+    exception = DBDoesntExistsException

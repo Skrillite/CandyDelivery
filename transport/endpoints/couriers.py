@@ -38,9 +38,9 @@ class PatchCourier(SanicEndpoint):
         courier_row: DBCourier = session.get_courier_by_id(request.match_info['id'])
         courier_dict = {
             'courier_id': courier_row.courier_id,
-            'courier_type': courier_row.courier_type,
+            'lifting_capacity': courier_row.lifting_capacity,
             'regions': courier_row.regions,
-            'working_hours': courier_row.working_hours
+            'working_hours': [time_range.__str__() for time_range in courier_row.working_hours]
         }
 
         return await self.make_response_json(status=200, body=courier_dict)

@@ -11,6 +11,6 @@ class DBCourier(BaseModel):
     orders = relationship("DBOrder", backref="couriers")
 
     courier_id = Column(Integer, unique=True, nullable=False, primary_key=True)
-    courier_type = Column(VARCHAR(4), nullable=False)
+    lifting_capacity = Column(Integer, nullable=False)
     regions = Column(ARRAY(Integer), nullable=False)
     working_hours = Column(ARRAY(TIMERANGE))

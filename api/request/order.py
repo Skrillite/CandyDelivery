@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ValidationError, validator
+from datetime import datetime
 
-from api.exceptions import RequestValidationException
+from api.exceptions import RequestValidationException, EmptyValidationException
 from .helpers import time_range_check
 from db.helpers import TimeRange
 
@@ -40,3 +41,21 @@ def order_list_validation(input_dict: dict) -> list[Order]:
         raise RequestValidationException(body={'validation_error': {'couriers': invalid_list}})
 
     return valid_list
+
+
+class OrderComplete(BaseModel):
+    courier_id: int
+    order_id: int
+    complete_time: datetime
+
+    class Config:
+        extra = 'forbid'
+
+
+def order_complete_validation(input_dict: dict) -> OrderComplete:
+    try:
+        order = OrderComplete.parse_obj(input_dict)
+    except ValidationError as e:
+        raise EmptyValidationException
+
+    return order

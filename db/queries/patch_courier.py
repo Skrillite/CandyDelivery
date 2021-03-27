@@ -1,12 +1,12 @@
 from api.request.courier import DefCourier
 from db.database import DBSession
 from db.models import DBCourier
-from db.exception import DBCourierExistsException
+from db.exception import DBDoesntExistsException
 
 
 def patch_courier(_id: int, session: DBSession, courier: DefCourier):
-    if session.get_courier_by_id(_id) is None:
-        raise DBCourierExistsException
+    if not session.get_courier_by_id(_id):
+        raise DBDoesntExistsException
 
     patch_data = {
         key: value
@@ -14,5 +14,5 @@ def patch_courier(_id: int, session: DBSession, courier: DefCourier):
         if value is not None
     }
 
-    session.query(DBCourier).where(DBCourier.courier_id == _id).update(patch_data)
+    session.query(DBCourier).filter(DBCourier.courier_id == _id).update(patch_data)
 

@@ -1,6 +1,6 @@
 
 class ApplicationException(Exception):
-    def __init__(self, status_code=500, body: dict = None, message: str = None):
+    def __init__(self, status_code, body: dict = None, message: str = None):
         self.status_code = status_code
 
         if body is None and message is not None:

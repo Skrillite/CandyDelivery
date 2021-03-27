@@ -18,8 +18,8 @@ class DBDataException(SanicException):
         )
 
 
-class DBCourierExistsException(ApplicationException):
+class DBDoesntExistsException(ApplicationException):
     def __init__(self):
-        super(DBCourierExistsException, self).__init__(
+        super(DBDoesntExistsException, self).__init__(
             status_code=400
         )

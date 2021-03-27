@@ -7,7 +7,8 @@ class RequestValidationException(ApplicationException):
 
 
 class EmptyValidationException(ApplicationException):
-    pass
+    def __init__(self):
+        super(EmptyValidationException, self).__init__(status_code=400)
 
 
 class ResponseValidationException(ApplicationException):
