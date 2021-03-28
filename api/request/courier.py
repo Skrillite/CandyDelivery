@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ValidationError, validator
 
-from api.exceptions import *
+from api.exceptions import RequestValidationException
 from .helpers import time_range_check
 from db.helpers import TimeRange
 
@@ -72,7 +72,7 @@ def patch_courier_validation(input_dict: dict) -> DefCourier:
     try:
         obj = DefCourier.parse_obj(input_dict)
     except ValidationError as e:
-        raise EmptyValidationException
+        raise RequestValidationException
 
     return obj
 
@@ -88,6 +88,6 @@ def courier_id_validation(input_dict: dict) -> CourierID:
     try:
         obj = CourierID.parse_obj(input_dict)
     except ValidationError as e:
-        raise EmptyValidationException
+        raise RequestValidationException
 
     return obj

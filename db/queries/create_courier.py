@@ -21,7 +21,7 @@ def create_courier(session: DBSession, courier: Courier) -> DBCourier:
 
 
 def overwrite_couriers(session: DBSession, couriers: list[Courier]):
-    session.drop_base(DBCourier)
+    session.delete_table_data(DBCourier)
 
     for cr in couriers:
         create_courier(session, cr)

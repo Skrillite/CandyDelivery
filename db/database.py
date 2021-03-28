@@ -15,7 +15,7 @@ class DBSession:
     def query(self, *args, **kwargs) -> Query:
         return self._session.query(*args, **kwargs)
 
-    def drop_base(self, model: BaseModel) -> Query:
+    def delete_table_data(self, model: BaseModel) -> Query:
         return self._session.query(model).delete()
 
     def close_session(self):

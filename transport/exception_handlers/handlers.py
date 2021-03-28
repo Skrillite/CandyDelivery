@@ -10,8 +10,9 @@ def get_exc_handlers():
     return (
         RequestValidationHandler,
         ResponseValidationHandler,
-        EmptyRequestValidationExceptionHandler,
-        DBCourierExistExceptionHandler
+        DBCourierExistExceptionHandler,
+        DBIntegrityHandler,
+        DBDataHandler
     )
 
 
@@ -34,9 +35,13 @@ class ResponseValidationHandler(BasicValidationHandler):
     exception = ResponseValidationException
 
 
-class EmptyRequestValidationExceptionHandler(BasicValidationHandler):
-    exception = EmptyValidationException
-
-
 class DBCourierExistExceptionHandler(BasicValidationHandler):
     exception = DBDoesntExistsException
+
+
+class DBDataHandler(BasicValidationHandler):
+    exception = DBDataException
+
+
+class DBIntegrityHandler(BasicValidationHandler):
+    exception = DBIntegrityException

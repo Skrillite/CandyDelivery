@@ -17,7 +17,7 @@ def create_order(session: DBSession, order: Order) -> DBOrder:
 
 
 def overwrite_orders(session: DBSession, orders: list[Order]):
-    session.drop_base(DBOrder)
+    session.delete_table_data(DBOrder)
 
     for order in orders:
         create_order(session, order)

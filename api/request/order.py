@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ValidationError, validator
 from datetime import datetime
 
-from api.exceptions import RequestValidationException, EmptyValidationException
+from api.exceptions import RequestValidationException
 from .helpers import time_range_check
 from db.helpers import TimeRange
 
@@ -56,6 +56,6 @@ def order_complete_validation(input_dict: dict) -> OrderComplete:
     try:
         order = OrderComplete.parse_obj(input_dict)
     except ValidationError as e:
-        raise EmptyValidationException
+        raise RequestValidationException
 
     return order

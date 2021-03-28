@@ -1,19 +1,18 @@
 from base_exception import ApplicationException
-from sanic.exceptions import SanicException
 
 
-class DBIntegrityException(SanicException):
+class DBIntegrityException(ApplicationException):
     def __init__(self):
         super(DBIntegrityException, self).__init__(
-            status_code=530,
+            status_code=500,
             message="DBIntegrityException"
         )
 
 
-class DBDataException(SanicException):
+class DBDataException(ApplicationException):
     def __init__(self):
         super(DBDataException, self).__init__(
-            status_code=530,
+            status_code=500,
             message="DBDataException"
         )
 

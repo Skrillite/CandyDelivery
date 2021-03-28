@@ -38,7 +38,7 @@ def get_courier_stats(session: DBSession, courier_id: int) -> dict:
 
     if len(lead_time) > 0:
         courier_data.update({
-            'rating': (60 * 60 - min(min(lead_time).total_seconds(), 60 * 60)) / (60 * 60) * 5,
+            'rating': float(f"{(60 * 60 - min(min(lead_time).total_seconds(), 60 * 60)) / (60 * 60) * 5:.2f}"),
             'earnings': len(lead_time) * (500 * courier_rate[courier.lifting_capacity])
         })
 
