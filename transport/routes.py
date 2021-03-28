@@ -23,5 +23,8 @@ def get_routes(database_context: ContextVar) -> Tuple:
         ),
         endpoints.CompleteOrder(
             uri='/orders/complete', methods=['POST'], context=database_context,
-        )
+        ),
+        endpoints.GetCourier(
+            uri='couriers/<id>', methods=['GET'], context=database_context,
+        ),
     )

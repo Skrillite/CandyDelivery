@@ -4,7 +4,7 @@ from sanic.response import BaseHTTPResponse
 from transport.base import SanicEndpoint
 from api.request import *
 
-from db.queries import overwrite_couriers, patch_courier
+from db.queries import overwrite_couriers, patch_courier, get_courier_stats
 from db.database import DBSession
 from db.models import DBCourier
 
@@ -40,7 +40,19 @@ class PatchCourier(SanicEndpoint):
             'courier_id': courier_row.courier_id,
             'lifting_capacity': courier_row.lifting_capacity,
             'regions': courier_row.regions,
-            'working_hours': [time_range.__str__() for time_range in courier_row.working_hours]
+            'working_hours': [time_range.__str__().strip('[]') for time_range in courier_row.working_hours]
         }
 
         return await self.make_response_json(status=200, body=courier_dict)
+
+
+class GetCourier(SanicEndpoint):
+
+    async def method_get(self, request: Request, body: dict, *args, **kwargs) \
+            -> BaseHTTPResponse:
+        session: DBSession = self.database_context.get().make_session()
+
+        courier_id = request.match_info['id']
+        courier_data = get_courier_stats(session, courier_id)
+
+        return await self.make_response_json(courier_data)
