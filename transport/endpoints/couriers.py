@@ -40,7 +40,7 @@ class PatchCourier(SanicEndpoint):
             'courier_id': courier_row.courier_id,
             'lifting_capacity': courier_row.lifting_capacity,
             'regions': courier_row.regions,
-            'working_hours': [time_range.lower + '-' + time_range.upper for time_range in courier_row.working_hours]
+            'working_hours': [time_range.lower.__str__() + '-' + time_range.upper.__str__() for time_range in courier_row.working_hours]
         }
 
         return await self.make_response_json(status=200, body=courier_dict)

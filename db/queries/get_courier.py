@@ -32,7 +32,7 @@ def get_courier_stats(session: DBSession, courier_id: int) -> dict:
         'courier_id': courier.courier_id,
         'courier_type': courier_type,
         'regions': courier.regions,
-        'working_hours': [time_range.__str__().strip('[]') for time_range in courier.working_hours],
+        'working_hours': [time_range.lower.__str__() + '-' + time_range.upper.__str__() for time_range in courier.working_hours],
         'earnings': 0
     }
 

@@ -67,6 +67,12 @@ class DefCourier(Courier):
     regions: list[int] = None
     working_hours: list[str] = None
 
+    @validator('courier_type')
+    def courier_types_check(cls, courier_type):
+        if courier_type not in ['foot', 'bike', 'car']:
+            raise ValueError(f'{courier_type} is not allowed type')
+        return courier_lifting_capacity[courier_type]
+
 
 def patch_courier_validation(input_dict: dict) -> DefCourier:
     try:
