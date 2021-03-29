@@ -4,9 +4,10 @@ from sanic.response import BaseHTTPResponse
 from transport.base import SanicEndpoint
 from api.request import *
 
-from db.queries import overwrite_couriers, patch_courier, get_courier_stats
+from db.queries import write_couriers, patch_courier, get_courier_stats, check_ex_courier
 from db.database import DBSession
 from db.models import DBCourier
+from api.exceptions import RequestValidationException
 
 
 class CreateCouriers(SanicEndpoint):
@@ -16,7 +17,12 @@ class CreateCouriers(SanicEndpoint):
         session: DBSession = self.database_context.get().make_session()
 
         request_model: list[Courier] = courier_list_validation(body)
-        overwrite_couriers(session, request_model)
+
+        exs = check_ex_courier(session, [i.courier_id for i in request_model])
+        if exs:
+            raise RequestValidationException(body={"validation_error": {"couriers": [{"id": i} for i in exs]}})
+
+        write_couriers(session, request_model)
         session.commit_session()
 
         _id = [{'id:': i.courier_id} for i in request_model]

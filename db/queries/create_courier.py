@@ -20,8 +20,8 @@ def create_courier(session: DBSession, courier: Courier) -> DBCourier:
     return new_courier
 
 
-def overwrite_couriers(session: DBSession, couriers: list[Courier]):
-    session.delete_table_data(DBCourier)
+def write_couriers(session: DBSession, couriers: list[Courier]):
+    #session.delete_table_data(DBCourier)
 
     for cr in couriers:
         create_courier(session, cr)

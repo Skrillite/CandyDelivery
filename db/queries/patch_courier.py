@@ -14,17 +14,14 @@ def patch_courier(_id: int, session: DBSession, courier: DefCourier):
         if value is not None
     }
 
-    try:
-        if patch_data['courier_type']:
-            patch_data['lifting_capacity'] = patch_data['courier_type']
-            del patch_data['courier_type']
-    except KeyError as e:
-        pass
+    if 'courier_type' in patch_data and patch_data['courier_type']:
+        patch_data['lifting_capacity'] = patch_data['courier_type']
+        del patch_data['courier_type']
 
     session.query(DBCourier).filter(DBCourier.courier_id == _id).update(patch_data, synchronize_session=False)
 
     unsuitable: list[int] = session._session.execute(
-                f"""select orders.order_id from orders
+        f"""select orders.order_id from orders
                     join couriers on orders.courier_id = couriers.courier_id
                     join
                         (select (not(dh && wh)).bool_and as bl, order_id

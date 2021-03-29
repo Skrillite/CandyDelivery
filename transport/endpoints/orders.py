@@ -1,10 +1,10 @@
 from sanic.request import Request
 from sanic.response import BaseHTTPResponse
 
-from transport.base import SanicEndpoint
+from api.exceptions import RequestValidationException
 from api.request import order_list_validation, Order
-
-from db.queries import overwrite_orders
+from transport.base import SanicEndpoint
+from db.queries import write_orders, check_ex_order
 from db.database import DBSession
 
 
@@ -14,7 +14,12 @@ class CreateOrders(SanicEndpoint):
         session: DBSession = self.database_context.get().make_session()
 
         request_model: list[Order] = order_list_validation(body)
-        overwrite_orders(session, request_model)
+
+        exs = check_ex_order(session, [i.order_id for i in request_model])
+        if exs:
+            raise RequestValidationException(body={"validation_error": {"orders": [{"id": i} for i in exs]}})
+
+        write_orders(session, request_model)
         session.commit_session()
 
         _id = [{'id:': i.order_id} for i in request_model]
