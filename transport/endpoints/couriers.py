@@ -8,6 +8,7 @@ from db.queries import write_couriers, patch_courier, get_courier_stats, check_e
 from db.database import DBSession
 from db.models import DBCourier
 from api.exceptions import RequestValidationException
+from api.request.courier import courier_lifting_capacity
 
 
 class CreateCouriers(SanicEndpoint):
@@ -44,7 +45,7 @@ class PatchCourier(SanicEndpoint):
         courier_row: DBCourier = session.get_courier_by_id(request.match_info['id'])
         courier_dict = {
             'courier_id': courier_row.courier_id,
-            'lifting_capacity': courier_row.lifting_capacity,
+            'courier_type': {v: k for k, v in courier_lifting_capacity.items()}[courier_row.lifting_capacity],
             'regions': courier_row.regions,
             'working_hours': [time_range.lower.__str__() + '-' + time_range.upper.__str__() for time_range in courier_row.working_hours]
         }
