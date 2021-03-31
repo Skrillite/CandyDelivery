@@ -22,18 +22,20 @@ def patch_courier(_id: int, session: DBSession, courier: DefCourier):
 
     unsuitable: list[int] = session._session.execute(
         f"""select orders.order_id from orders
-                    join couriers on orders.courier_id = couriers.courier_id
-                    join
-                        (select (not(dh && wh)).bool_and as bl, order_id
-                         from orders, couriers,
-                        lateral unnest(orders.delivery_hours) as dh,
-                        lateral unnest(couriers.working_hours) as wh
-                        where couriers.courier_id = {_id}
-                        group by order_id, couriers.courier_id) as bll
-                    on bll.order_id = orders.order_id
-                    where bll.bl = True
-                    or orders.weight > couriers.lifting_capacity
-                    or orders.region != all(couriers.regions)""").fetchall()
+            join couriers on orders.courier_id = couriers.courier_id
+            join
+                (select (not(dh && wh)).bool_and as bl, order_id
+                 from orders, couriers,
+                lateral unnest(orders.delivery_hours) as dh,
+                lateral unnest(couriers.working_hours) as wh
+                where couriers.courier_id = {_id}
+                group by order_id, couriers.courier_id) as bll
+            on bll.order_id = orders.order_id
+            where orders.complete_time is Null
+        
+            and (bll.bl = True
+            or orders.weight > couriers.lifting_capacity
+            or orders.region != all(couriers.regions))""").fetchall()
 
     unsuitable = [i[0] for i in unsuitable]
 
