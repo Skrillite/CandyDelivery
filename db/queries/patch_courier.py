@@ -20,7 +20,7 @@ def patch_courier(_id: int, session: DBSession, courier: DefCourier):
 
     session.query(DBCourier).filter(DBCourier.courier_id == _id).update(patch_data, synchronize_session=False)
 
-    unsuitable: list[int] = session._session.execute(
+    unsuitable: set[int] = session._session.execute(
         f"""select orders.order_id from orders
             join couriers on orders.courier_id = couriers.courier_id
             join
@@ -32,12 +32,20 @@ def patch_courier(_id: int, session: DBSession, courier: DefCourier):
                 group by order_id, couriers.courier_id) as bll
             on bll.order_id = orders.order_id
             where orders.complete_time is Null
-        
+            and orders.courier_id = {_id}
             and (bll.bl = True
             or orders.weight > couriers.lifting_capacity
             or orders.region != all(couriers.regions))""").fetchall()
 
-    unsuitable = [i[0] for i in unsuitable]
+    unsuitable = {i[0] for i in unsuitable}
 
-    session.query(DBOrder).filter(DBOrder.order_id.in_(unsuitable)).update({'assign_time': None, 'courier_id': None}
-                                                                           , synchronize_session=False)
+    if unsuitable:
+        session.query(DBOrder)\
+            .filter(DBOrder.order_id.in_(unsuitable))\
+            .update({'assign_time': None, 'courier_id': None, 'assign_ids': None}, synchronize_session=False)
+
+        ids = session.query(DBOrder.assign_ids).filter(DBOrder.courier_id == _id).first()
+        if ids:
+            new_assign_ids = [i for i in ids.assign_ids if i not in unsuitable]
+            session.query(DBOrder).filter(DBOrder.courier_id == _id)\
+                .update({'assign_ids': new_assign_ids}, synchronize_session=False)

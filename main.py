@@ -1,7 +1,7 @@
 from contextvars import ContextVar
 
 from configs.configs import ApplicationConfigs
-from transport.configure_sanic import configure_app
+from transport.configure_app import configure_app
 
 
 def main():
