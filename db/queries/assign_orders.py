@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import distinct
+from sqlalchemy import distinct, update
 
 from api.request.courier import CourierID
 from db.database import DBSession
@@ -14,15 +14,19 @@ def assign(session: DBSession, courier_id: CourierID, assign_time: datetime.date
         .join(DBWorkingHours, DBWorkingHours.courier_id == DBCourier.courier_id) \
         .join(DBRegions, DBRegions.courier_id == DBCourier.courier_id).subquery()
 
-    suitable_orders = session.query(distinct(orders.c.order_id)) \
+    suitable_orders = session.query(orders) \
         .join(couriers, orders.c.region == couriers.c.region) \
         .filter((orders.c.weight <= couriers.c.lifting_capacity)
-                & (orders.c.hours.overlaps(couriers.c.hours))).subquery()
-    # TODO добавить в проверку статус заказа
-    suitable_orders_ids = [i[0] for i in session.query(suitable_orders).all()]
+                & (orders.c.hours.overlaps(couriers.c.hours))
+                & (orders.c.courier_id == None)).subquery()
 
-    session.query(orders).filter(orders.c.order_id in suitable_orders_ids) \
-        .update({"courier_id": courier_id.courier_id, "assign_ids": orders, "assign_time": assign_time}
-                , synchronize_session=False)
+    suitable_orders_ids = [i[0] for i in session.query(distinct(suitable_orders.c.order_id)).all()]
+
+    session.query(DBOrder).filter(DBOrder.order_id.in_(suitable_orders_ids)) \
+        .update({
+                    DBOrder.courier_id: courier_id.courier_id,
+                    DBOrder.assign_time: assign_time
+                }, synchronize_session=False)
+
 
     return suitable_orders_ids
