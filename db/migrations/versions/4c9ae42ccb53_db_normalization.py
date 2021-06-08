@@ -1,8 +1,8 @@
-"""normalization
+"""db normalization
 
-Revision ID: 8faa13aac1de
+Revision ID: 4c9ae42ccb53
 Revises: 3c33822e9e3e
-Create Date: 2021-05-30 00:16:32.799032
+Create Date: 2021-05-30 00:46:04.534950
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 
 import db
 
-revision = '8faa13aac1de'
+revision = '4c9ae42ccb53'
 down_revision = '3c33822e9e3e'
 branch_labels = None
 depends_on = None
@@ -46,9 +46,11 @@ def upgrade():
     op.drop_column('couriers', 'regions')
     op.drop_column('couriers', 'working_hours')
     op.drop_column('orders', 'delivery_hours')
+    op.drop_column('orders', 'assign_ids')
 
 
 def downgrade():
+    op.add_column('orders', sa.Column('assign_ids', postgresql.ARRAY(sa.INTEGER()), autoincrement=False, nullable=True))
     op.add_column('orders', sa.Column('delivery_hours', db.helpers.timerange.TIMERANGE(), autoincrement=False, nullable=False))
     op.add_column('couriers', sa.Column('working_hours', db.helpers.timerange.TIMERANGE(), autoincrement=False, nullable=True))
     op.add_column('couriers', sa.Column('regions', postgresql.ARRAY(sa.INTEGER()), autoincrement=False, nullable=False))

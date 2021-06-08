@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, Column, ARRAY, \
+from sqlalchemy import Integer, Column, \
     Float, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 
@@ -18,4 +18,3 @@ class DBOrder(BaseModel):
     region = Column(Integer, nullable=False)
     assign_time = Column(TIMESTAMP(timezone=True), nullable=True)
     complete_time = Column(TIMESTAMP(timezone=True), nullable=True)
-    assign_ids = Column(ARRAY(Integer), nullable=True)

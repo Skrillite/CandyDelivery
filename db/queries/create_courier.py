@@ -1,21 +1,33 @@
 from api.request.courier import Courier
 from db.database import DBSession
 from db.models import DBCourier
-from db.exception import DBDoesntExistsException
+from db.models import DBRegions
+from db.models import DBWorkingHours
 
 
 def create_courier(session: DBSession, courier: Courier) -> DBCourier:
     new_courier = DBCourier(
         courier_id=courier.courier_id,
         lifting_capacity=courier.courier_type,
-        regions=courier.regions,
-        working_hours=courier.working_hours
     )
 
-    # if session.get_courier_by_id(courier.courier_id):
-    #     raise DBCourierExistsException(courier.courier_id)
-
     session.add_model(new_courier)
+
+    for region in courier.regions:
+        session.add_model(
+            DBRegions(
+                courier_id=courier.courier_id,
+                region=region
+            )
+        )
+
+    for working_hours in courier.working_hours:
+        session.add_model(
+            DBWorkingHours(
+                courier_id=courier.courier_id,
+                hours=working_hours
+            )
+        )
 
     return new_courier
 

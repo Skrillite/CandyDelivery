@@ -1,30 +1,28 @@
 import datetime
-from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql.ranges import RangeOperators
-from functools import partial
+from sqlalchemy import distinct
 
 from api.request.courier import CourierID
 from db.database import DBSession
-from db.models import DBCourier, DBOrder
-from db.helpers import TIMERANGE, TimeRange
+from db.models import DBCourier, DBOrder, DBDeliveryHours, DBRegions, DBWorkingHours
 
 
 def assign(session: DBSession, courier_id: CourierID, assign_time: datetime.datetime) -> list[int]:
-    orders: list[int] = session._session.execute(f"""select order_id from orders, couriers,
-                                                    lateral unnest(orders.delivery_hours) as dh,
-                                                    lateral unnest(couriers.working_hours) as wh
-                                                    where couriers.courier_id = {courier_id.courier_id}
-                                                    and orders.courier_id is Null
-                                                    and orders.weight <= couriers.lifting_capacity
-                                                    and orders.region = any(couriers.regions)
-                                                    group by order_id
-                                                    having (wh && dh).bool_or""").fetchall()
-    for idx, i in enumerate(orders):
-        orders[idx] = i[0]
+    orders = session.query(DBOrder, DBDeliveryHours.hours) \
+        .join(DBDeliveryHours, DBOrder.order_id == DBDeliveryHours.order_id).subquery()
 
-    if orders:
-        session.query(DBOrder).filter(DBOrder.order_id.in_(orders)) \
-            .update({"courier_id": courier_id.courier_id, "assign_ids": orders, "assign_time": assign_time}
-                    , synchronize_session=False)
+    couriers = session.query(DBCourier, DBWorkingHours.hours, DBRegions.region) \
+        .join(DBWorkingHours, DBWorkingHours.courier_id == DBCourier.courier_id) \
+        .join(DBRegions, DBRegions.courier_id == DBCourier.courier_id).subquery()
 
-    return orders
+    suitable_orders = session.query(distinct(orders.c.order_id)) \
+        .join(couriers, orders.c.region == couriers.c.region) \
+        .filter((orders.c.weight <= couriers.c.lifting_capacity)
+                & (orders.c.hours.overlaps(couriers.c.hours))).subquery()
+    # TODO добавить в проверку статус заказа
+    suitable_orders_ids = [i[0] for i in session.query(suitable_orders).all()]
+
+    session.query(orders).filter(orders.c.order_id in suitable_orders_ids) \
+        .update({"courier_id": courier_id.courier_id, "assign_ids": orders, "assign_time": assign_time}
+                , synchronize_session=False)
+
+    return suitable_orders_ids
